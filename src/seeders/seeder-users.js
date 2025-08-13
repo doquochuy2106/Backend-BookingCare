@@ -1,13 +1,6 @@
 'use strict';
 
 module.exports = {
-  // email: DataTypes.STRING,
-  // password: DataTypes.STRING,
-  // firstName: DataTypes.STRING,
-  // lastName: DataTypes.STRING,
-  // address: DataTypes.STRING,
-  // gender: DataTypes.BOOLEAN,
-  // roleid: DataTypes.STRING
   up: async (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Users', [
       {
