@@ -55,10 +55,20 @@ let getEditCRUD = async (req, res) => {
 let putCRUD = async (req, res) => {
     let data = req.body
     let allUsers = await CRUDservice.updateUserData(data)
-
     return res.render("displayCRUD.ejs", {
         dataTable: allUsers
     })
 }
 
-module.exports = { getHomePage, getAbout, getCRUD, postCRUD, displayGetCRUD, getEditCRUD, putCRUD }
+let deleteCRUD = async (req, res) => {
+    let id = req.query.id
+    if (id) {
+        await CRUDservice.deleteUserById(id)
+        return res.send("Delete user success!")
+    }
+    else {
+        return res.send("Not found user")
+    }
+}
+
+module.exports = { getHomePage, getAbout, getCRUD, postCRUD, displayGetCRUD, getEditCRUD, putCRUD, deleteCRUD }
