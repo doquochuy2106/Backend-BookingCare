@@ -119,23 +119,27 @@ let createNewUser = (data) => {
                 })
 
             }
-            let hashPasswordFromBcrypt = await hashUserPassword(data.password)
-            await db.User.create({
-                email: data.email,
-                password: hashPasswordFromBcrypt,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                address: data.address,
-                phonenumber: data.phonenumber,
-                gender: data.gender === 1 ? "Male" : "Female",
-                roleId: data.roleId,
-            })
+            else {
+                let hashPasswordFromBcrypt = await hashUserPassword(data.password)
+                await db.User.create({
+                    email: data.email,
+                    password: hashPasswordFromBcrypt,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address,
+                    phonenumber: data.phonenumber,
+                    gender: data.gender === 1 ? "Male" : "Female",
+                    roleId: data.roleId,
+                })
 
-            resolve({
-                errCode: 0,
-                errMessage: "OK!",
-                data
-            })
+                resolve({
+                    errCode: 0,
+                    errMessage: "OK!",
+                    data
+                })
+            }
+
+
         } catch (e) {
             reject(e)
         }
