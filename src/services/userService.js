@@ -138,8 +138,6 @@ let createNewUser = (data) => {
                     data
                 })
             }
-
-
         } catch (e) {
             reject(e)
         }
