@@ -210,6 +210,31 @@ let editUser = async (data) => {
     })
 }
 
+let getAllCodeService = async (inputType) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputType) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Require missing paramester"
+                })
+            }
+            else {
+                let res = {};
+                let allcode = await db.Allcode.findAll({
+                    where: { type: inputType }
+                })
+                res.errCode = 0;
+                res.data = allcode
+                resolve(res)
+            }
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
-    handleUserLogin, checkUserEmail, getAllUsers, createNewUser, deleteUser, editUser
+    handleUserLogin, checkUserEmail, getAllUsers, createNewUser, deleteUser, editUser, getAllCodeService
 }
