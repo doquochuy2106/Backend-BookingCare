@@ -1,5 +1,6 @@
 import { where } from "sequelize"
 import db from "../model/index"
+import { raw } from "body-parser"
 
 let getTopDoctorHome = (limitInput) => {
     return new Promise(async (resolve, reject) => {
@@ -50,19 +51,37 @@ let getAllDoctors = () => {
 let saveDetailInforDoctor = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!data.doctorId || !data.contentHTML || !data.contentMarkdown) {
+            if (!data.doctorId || !data.contentHTML || !data.contentMarkdown || !data.action) {
                 resolve({
                     errCode: 1,
                     errMessage: "Missing require parameter"
                 })
             }
             else {
-                await db.Markdown.create({
-                    contentHTML: data.contentHTML,
-                    contentMarkdown: data.contentMarkdown,
-                    description: data.description,
-                    doctorId: data.doctorId
-                })
+                if (data.action === "CREATE") {
+                    await db.Markdown.create({
+                        contentHTML: data.contentHTML,
+                        contentMarkdown: data.contentMarkdown,
+                        description: data.description,
+                        doctorId: data.doctorId
+                    })
+                }
+
+                if (data.action === "EDIT") {
+                    let doctorMarkdown = await db.Markdown.findOne({
+                        where: { doctorId: data.doctorId },
+                        raw: false
+                    })
+
+                    if (doctorMarkdown) {
+                        doctorMarkdown.contentHTML = data.contentHTML;
+                        doctorMarkdown.contentMarkdown = data.contentMarkdown;
+                        doctorMarkdown.description = data.description;
+
+                        await doctorMarkdown.save()
+                    }
+                }
+
                 resolve({
                     errCode: 0,
                     errMessage: "Save Infor Doctor Success"
