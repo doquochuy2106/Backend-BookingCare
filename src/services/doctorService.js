@@ -1,6 +1,10 @@
 import { where } from "sequelize"
 import db from "../model/index"
 import { raw } from "body-parser"
+require('dotenv').config();
+import _ from 'lodash';
+
+const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 
 let getTopDoctorHome = (limitInput) => {
     return new Promise(async (resolve, reject) => {
@@ -134,6 +138,67 @@ let getDetailDoctorById = (id) => {
     })
 }
 
+let bulkCreateSchedule = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!data.arrSchedule && !data.doctorId && !data.date) {
+                resolve({
+                    errCode: -1,
+                    errMessage: "Missing require Param!"
+                })
+            }
+            else {
+                let schedule = data.arrSchedule
+                if (schedule && schedule.length > 0) {
+                    schedule = schedule.map(item => {
+                        item.maxNumber = MAX_NUMBER_SCHEDULE
+                        return item
+                    })
+                }
+
+
+                //get all existing data
+                let existing = await db.Schedule.findAll(
+                    {
+                        where: { doctorId: data.doctorId, date: data.date },
+                        attributes: ['doctorId', 'date', 'timeType', 'maxNumber'],
+                        raw: true
+                    }
+                );
+
+                //convert date
+                if (existing && existing.length > 0) {
+                    existing = existing.map(item => {
+                        item.date = new Date(item.date).getTime();
+                        return item
+                    })
+                }
+
+                //comapre different
+                let toCreate = _.differenceWith(schedule, existing, (a, b) => {
+                    return a.timeType === b.timeType && +a.date === +b.date;
+                })
+
+                //create data
+                if (toCreate && toCreate.length > 0) {
+                    await db.Schedule.bulkCreate(toCreate)
+                }
+
+                resolve({
+                    errCode: 0,
+                    errMessage: 'ok!'
+                })
+            }
+
+
+
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
-    getTopDoctorHome, getAllDoctors, saveDetailInforDoctor, getDetailDoctorById
+    getTopDoctorHome, getAllDoctors, saveDetailInforDoctor, getDetailDoctorById, bulkCreateSchedule
 }
