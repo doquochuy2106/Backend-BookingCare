@@ -199,6 +199,36 @@ let bulkCreateSchedule = (data) => {
     })
 }
 
+let getScheduleByDate = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId && !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing require Parameter!"
+                })
+            }
+            else {
+                let data = await db.Schedule.findAll({
+                    where: { doctorId: doctorId, date: date }
+                })
+                if (!data) {
+                    resolve({
+                        data: []
+                    })
+                }
+                resolve({
+                    errCode: 0,
+                    data: data
+                })
+            }
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
-    getTopDoctorHome, getAllDoctors, saveDetailInforDoctor, getDetailDoctorById, bulkCreateSchedule
+    getTopDoctorHome, getAllDoctors, saveDetailInforDoctor, getDetailDoctorById, bulkCreateSchedule, getScheduleByDate
 }
