@@ -55,13 +55,17 @@ let getAllDoctors = () => {
 let saveDetailInforDoctor = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!data.doctorId || !data.contentHTML || !data.contentMarkdown || !data.action) {
+            if (!data.doctorId || !data.contentHTML || !data.contentMarkdown || !data.action
+                || !data.selectedPrice || !data.selectedPayment || !data.selectedProvince
+                || !data.nameClinic || !data.addressClinic || !data.note
+            ) {
                 resolve({
                     errCode: 1,
                     errMessage: "Missing require parameter"
                 })
             }
             else {
+                //upsert to Markdown
                 if (data.action === "CREATE") {
                     await db.Markdown.create({
                         contentHTML: data.contentHTML,
@@ -84,6 +88,37 @@ let saveDetailInforDoctor = (data) => {
 
                         await doctorMarkdown.save()
                     }
+                }
+
+                //upsert to Doctor_infor table
+                let doctorInfor = await db.Doctor_Infor.findOne({
+                    where: { doctorId: data.doctorId },
+                    raw: false
+                })
+
+                if (doctorInfor) {
+                    //update
+                    doctorInfor.doctorId = data.doctorId;
+                    doctorInfor.priceId = data.selectedPrice;
+                    doctorInfor.paymentId = data.selectedPayment;
+                    doctorInfor.provinceId = data.selectedProvince;
+                    doctorInfor.nameClinic = data.nameClinic;
+                    doctorInfor.addressClinic = data.addressClinic;
+                    doctorInfor.note = data.note
+
+                    await doctorInfor.save()
+                }
+                else {
+                    //create
+                    await db.Doctor_Infor.create({
+                        doctorId: data.doctorId,
+                        priceId: data.selectedPrice,
+                        paymentId: data.selectedPayment,
+                        provinceId: data.selectedProvince,
+                        nameClinic: data.nameClinic,
+                        addressClinic: data.addressClinic,
+                        note: data.note
+                    })
                 }
 
                 resolve({
