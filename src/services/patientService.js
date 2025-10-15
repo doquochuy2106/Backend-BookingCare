@@ -2,6 +2,7 @@ import { defaults, reject } from "lodash";
 import db from "../model/index"
 import { where } from "sequelize";
 require('dotenv').config();
+import emailService from "./emailService"
 
 let postBookAppointment = (data) => {
     return new Promise(async (resolve, reject) => {
@@ -14,6 +15,19 @@ let postBookAppointment = (data) => {
                 })
             }
             else {
+
+
+                await emailService.simpleSendEmail({
+                    reciverEmail: data.email,
+                    patientName: "Đỗ Quốc Huy Patient Name",
+                    time: '8:00 - 9:00 Thứ sáu 17/10/2025',
+                    doctorName: 'Quốc Huy',
+                    redirectLink: 'https://www.facebook.com/'
+                }
+                )
+
+
+
                 let user = await db.User.findOrCreate({
                     where: { email: data.email },
                     defaults: {
