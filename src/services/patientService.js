@@ -8,7 +8,7 @@ let postBookAppointment = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            if (!data.email || !data.doctorId || !data.date || !data.timeType) {
+            if (!data.email || !data.doctorId || !data.date || !data.timeType || !data.fullName) {
                 resolve({
                     errCode: 1,
                     errMessage: "Require Missing Parameter"
@@ -16,12 +16,12 @@ let postBookAppointment = (data) => {
             }
             else {
 
-
                 await emailService.simpleSendEmail({
                     reciverEmail: data.email,
-                    patientName: "Đỗ Quốc Huy Patient Name",
-                    time: '8:00 - 9:00 Thứ sáu 17/10/2025',
-                    doctorName: 'Quốc Huy',
+                    patientName: data.fullName,
+                    time: data.timeString,
+                    doctorName: data.doctorName,
+                    language: data.language,
                     redirectLink: 'https://www.facebook.com/'
                 }
                 )
