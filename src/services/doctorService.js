@@ -52,16 +52,33 @@ let getAllDoctors = () => {
     })
 }
 
+let checkRequireFields = (inputData) => {
+    let arr = ['doctorId', 'contentHTML', 'contentMarkdown', 'action', 'selectedPrice', 'selectedPayment'
+        , 'selectedPayment', 'selectedProvince', 'nameClinic', 'addressClinic', 'note', 'clinicId', 'specialtyId'
+    ]
+    let isvalid = true
+    let element = ''
+    for (let i = 0; i > arr.length; i++) {
+        if (!inputData[arr[i]]) {
+            isvalid = false
+            element = arr[i]
+            break;
+        }
+    }
+    return {
+        isvalid: isvalid,
+        element: element
+    }
+}
+
 let saveDetailInforDoctor = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!data.doctorId || !data.contentHTML || !data.contentMarkdown || !data.action
-                || !data.selectedPrice || !data.selectedPayment || !data.selectedProvince
-                || !data.nameClinic || !data.addressClinic || !data.note
-            ) {
+            let obj = checkRequireFields(data)
+            if (obj.isvalid = false) {
                 resolve({
                     errCode: 1,
-                    errMessage: "Missing require parameter"
+                    errMessage: `Missing require parameter: ${obj.element}`
                 })
             }
             else {
@@ -72,6 +89,7 @@ let saveDetailInforDoctor = (data) => {
                         contentMarkdown: data.contentMarkdown,
                         description: data.description,
                         doctorId: data.doctorId
+
                     })
                 }
 
@@ -104,7 +122,9 @@ let saveDetailInforDoctor = (data) => {
                     doctorInfor.provinceId = data.selectedProvince;
                     doctorInfor.nameClinic = data.nameClinic;
                     doctorInfor.addressClinic = data.addressClinic;
-                    doctorInfor.note = data.note
+                    doctorInfor.note = data.note;
+                    doctorInfor.specialtyId = data.specialtyId
+                    doctorInfor.clinicId = data.clinicId
 
                     await doctorInfor.save()
                 }
@@ -117,7 +137,9 @@ let saveDetailInforDoctor = (data) => {
                         provinceId: data.selectedProvince,
                         nameClinic: data.nameClinic,
                         addressClinic: data.addressClinic,
-                        note: data.note
+                        note: data.note,
+                        specialty: data.specialtyId,
+                        clinicId: data.clinicId
                     })
                 }
 
