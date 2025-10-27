@@ -20,8 +20,14 @@ module.exports = {
             description: {
                 type: Sequelize.TEXT
             },
+            descriptionHTML: {
+                type: Sequelize.TEXT
+            },
+            descriptionMarkdown: {
+                type: Sequelize.TEXT
+            },
             image: {
-                type: Sequelize.INTEGER
+                type: Sequelize.BLOB('long')
             },
 
             createdAt: {
